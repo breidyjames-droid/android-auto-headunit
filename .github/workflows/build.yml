@@ -6,28 +6,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1 - clona el repo
+      # 1) Clona el repo
       - uses: actions/checkout@v4
 
-      # 2 - Java 8 (AAH no compila con JDK 17)
+      # 2) Java 8 (AAH lo requiere)
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
 
-      # 3 - SDK de Android + licencias (acción estable)
+      # 3) SDK de Android
       - uses: android-actions/setup-android@v3
         with:
-          cmdline-tools: latest          # instala tools + acepta licencias
+          cmdline-tools-version: 8512546     # versión 7.0 de cmdline-tools
           packages: |
             build-tools;29.0.3
             platforms;android-29
 
-      # 4 - compila APK debug
+      # 4) Compila el APK debug
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
-      # 5 - sube el APK como artefacto
+      # 5) Sube el APK
       - uses: actions/upload-artifact@v4
         with:
           name: aah-apk
