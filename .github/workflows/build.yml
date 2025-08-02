@@ -1,24 +1,33 @@
 name: build
 on: push
+
 jobs:
   aah:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Clona el repo
       - uses: actions/checkout@v4
 
+      # 2. Instala Java 8 (el proyecto lo requiere)
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
 
-         - uses: android-actions/setup-android@v3
+      # 3. Instala SDK de Android con los paquetes imprescindibles
+      - uses: android-actions/setup-android@v3
         with:
-          packages: "platform-tools;platforms;android-29"
+          packages: |
+            platform-tools
+            platforms;android-29
+            build-tools;29.0.3
 
+      # 4. Compila el APK debug
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
+      # 5. Sube el APK como artefacto para que puedas descargarlo
       - uses: actions/upload-artifact@v4
         with:
           name: aah-apk
