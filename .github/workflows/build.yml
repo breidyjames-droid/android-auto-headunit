@@ -12,23 +12,30 @@ jobs:
       # 1) Clona el repo
       - uses: actions/checkout@v4
 
-      # 2) Java 8
-      - uses: actions/setup-java@v4
+      # 2) Java 17 → instala SDK y acepta licencias
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
 
-      # 3) Acepta licencias e instala SDK mínimo
-      - name: Install Android SDK 29
+      - name: Install SDK 29 + licenses
         run: |
           yes | $SDKMANAGER --licenses
           yes | $SDKMANAGER "platforms;android-29" "build-tools;29.0.3"
 
-      # 4) Compila el APK debug
+      # 3) Cambia a Java 8 (el que Gradle necesita)
+      - name: Switch to Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8
+
+      # 4) Compila el APK
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
-      # 5) Sube el APK como artefacto
+      # 5) Publica el artefacto
       - uses: actions/upload-artifact@v4
         with:
           name: aah-apk
