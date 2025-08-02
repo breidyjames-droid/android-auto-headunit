@@ -12,12 +12,9 @@ jobs:
           distribution: temurin
           java-version: 8
 
-      - uses: android-actions/setup-android@v3
-        with:
-          api-level: 29
-          ndk: false
-          cmake: false
-          cache: gradle
+     - uses: android-actions/setup-android@v3
+  with:
+    packages: ''
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
