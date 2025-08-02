@@ -9,34 +9,30 @@ jobs:
       SDKMANAGER: /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
 
     steps:
-      # 1) Clona el repo
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4           # clona
 
-      # 2) Java 17 → instala SDK y acepta licencias
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4         # Java 17 solo para sdkmanager
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Install SDK 29 + licenses
+      - name: Install SDK 29 + licencias
         run: |
           yes | $SDKMANAGER --licenses
           yes | $SDKMANAGER "platforms;android-29" "build-tools;29.0.3"
 
-      # 3) Cambia a Java 8 (el que Gradle necesita)
-      - name: Switch to Java 8
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4         # vuelve a Java 8 para Gradle
         with:
           distribution: temurin
           java-version: 8
 
-      # 4) Compila el APK
-      - name: Build debug APK
+      - name: Dar permiso al wrapper         # <–– ESTA línea arregla tu error
+        run: chmod +x gradlew
+
+      - name: Build debug APK                # compila
         run: ./gradlew assembleDebug --no-daemon
 
-      # 5) Publica el artefacto
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4     # sube el APK
         with:
           name: aah-apk
           path: app/build/outputs/apk/debug/app-debug.apk
