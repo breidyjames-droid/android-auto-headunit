@@ -4,30 +4,31 @@ on: push
 jobs:
   aah:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      SDKMANAGER: /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager
 
     steps:
       # 1) Clona el repo
       - uses: actions/checkout@v4
 
-      # 2) Java 8 (AAH lo requiere)
+      # 2) Java 8
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
 
-      # 3) SDK de Android
-      - uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 8512546     # versión 7.0 de cmdline-tools
-          packages: |
-            build-tools;29.0.3
-            platforms;android-29
+      # 3) Acepta licencias e instala SDK mínimo
+      - name: Install Android SDK 29
+        run: |
+          yes | $SDKMANAGER --licenses
+          yes | $SDKMANAGER "platforms;android-29" "build-tools;29.0.3"
 
       # 4) Compila el APK debug
       - name: Build debug APK
         run: ./gradlew assembleDebug --no-daemon
 
-      # 5) Sube el APK
+      # 5) Sube el APK como artefacto
       - uses: actions/upload-artifact@v4
         with:
           name: aah-apk
